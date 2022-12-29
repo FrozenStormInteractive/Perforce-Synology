@@ -1,0 +1,23 @@
+[
+    {
+        "step_title": "Upgrade the database",
+        "invalid_next_disabled": true,
+        "items": [
+            {
+                "type": "singleselect",
+                "desc": "Do you want to update the server database?",
+                "subitems": [
+                    {
+                        "key": "UiInput_UpgradeDatabase",
+                        "desc": "Yes",
+                        "defaultValue": true
+                    },
+                    {
+                        "desc": "No (You may have to do it manually)",
+                        "defaultValue": false
+                    }
+                ]
+            }
+        ]
+    }
+]

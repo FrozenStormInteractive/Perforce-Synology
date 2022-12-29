@@ -1,0 +1,24 @@
+{
+    "usr-local-linker": {
+        "bin": [
+            "usr/local/bin/p4",
+            "usr/local/bin/p4broker",
+            "usr/local/bin/p4d",
+            "usr/local/bin/p4p"
+        ]
+    },
+    "port-config": {
+        "protocol-file": "etc/HelixCoreServer.sc"
+    },
+    "data-share": {
+        "shares": [
+            {
+                "name": "Perforce",
+                "permission": {
+                    "rw": ["Perforce"]
+                }
+            }
+        ]
+    },
+    "systemd-user-unit":{}
+}

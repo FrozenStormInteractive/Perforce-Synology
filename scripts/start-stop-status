@@ -1,0 +1,36 @@
+#!/bin/sh
+# Copyright (C) 2000-2020 Synology Inc. All rights reserved.
+
+. /var/packages/${SYNOPKG_PKGNAME}/scripts/pkg_utils
+
+case $1 in
+    start)
+        if ! start_HelixCoreServer_service; then
+            exit 1
+        else
+            echo "the Helix Core Server has been successfully started" > $SYNOPKG_TEMP_LOGFILE
+        fi
+        exit 0
+        ;;
+    stop)
+        if ! stop_HelixCoreServer_service; then
+            exit 1
+        else
+            echo "the Helix Core Server has been successfully stopped" > $SYNOPKG_TEMP_LOGFILE
+        fi
+        exit 0
+        ;;
+    status)
+        if  [ "active" = "$(/usr/syno/bin/synosystemctl get-active-status ${HelixCoreServerServiceUnit})" ]; then
+            exit 0
+        else
+            exit 1
+        fi
+        ;;
+    killall)
+        ;;
+    log)
+        exit 0
+        ;;
+esac
+

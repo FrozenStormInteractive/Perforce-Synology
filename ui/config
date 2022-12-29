@@ -1,0 +1,11 @@
+{
+    ".url": {
+        "com.FrozenStormInteractive.HelixCoreServer": {
+            "desc": "Perforce Helix Core Server",
+            "icon": "images/{0}.png",
+            "title": "Perforce Helix Core Server",
+            "type": "url",
+            "url": "https://www.perforce.com/"
+        }
+    }
+}

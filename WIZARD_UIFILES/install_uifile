@@ -1,0 +1,70 @@
+[
+    {
+        "step_title": "Initialize server",
+        "invalid_next_disabled": true,
+        "items": [
+            {
+                "type": "textfield",
+                "subitems":[
+                    {
+                        "key": "UiInput_SuperUserName",
+                        "desc": "Super-user login name",
+                        "validator": {
+                            "allowBlank": false,
+                            "minLength": 3,
+                            "vtype": "alphanum"
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "password",
+                "subitems":[
+                    {
+                        "key": "UiInput_SuperUserPassword",
+                        "desc": "Super-user password",
+                        "validator": {
+                            "allowBlank": false,
+                            "minLength": 8,
+                            "vtype": "alphanum",
+                            "regex": {
+                                "expr": "/(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])/",
+                                "errorText": "Password should be mixed case or contain non alphabetic characters."
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "singleselect",
+                "desc": "Enable Unicode?",
+                "subitems": [
+                    {
+                        "key": "UiInput_EnableUnicode",
+                        "desc": "True",
+                        "defaultValue": true
+                    },
+                    {
+                        "desc": "False",
+                        "defaultValue": false
+                    }
+                ]
+            },
+            {
+                "type": "singleselect",
+                "desc": "Case sensitivity:",
+                "subitems": [
+                    {
+                        "key": "UiInput_CaseSensitive",
+                        "desc": "Case sensitive",
+                        "defaultValue": false
+                    },
+                    {
+                        "desc": "Case insensitive (Recommended for compatibility with Windows)",
+                        "defaultValue": true
+                    }
+                ]
+            }
+        ]
+    }
+]

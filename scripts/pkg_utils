@@ -1,0 +1,68 @@
+PKG_DIR="/var/packages/${SYNOPKG_PKGNAME}"
+
+SHARE=Perforce
+[ -z "$P4ROOT" ] && P4ROOT="$SYNOPKG_PKGDEST_VOL/$SHARE"
+[ -z "$DEBUG" ] && DEBUG=true # TODO DEBUG=false
+
+P4DExecute="$SYNOPKG_PKGDEST/usr/local/bin/p4d"
+P4Execute="$SYNOPKG_PKGDEST/usr/local/bin/p4"
+
+HelixCoreServerServiceUnit="pkguser-HelixCoreServer-p4d"
+HelixCoreServerConfigFile="${SYNOPKG_PKGVAR}/p4d.env"
+
+DEBUGLOGFILE="$P4ROOT/install_log"
+debug()
+{
+    $DEBUG || return 0
+    [ ! -f "$DEBUGLOGFILE" ] && touch $DEBUGLOGFILE
+    echo -e "$1" >&2 || true
+    echo -e "$1" >&2 >> $DEBUGLOGFILE || true
+}
+
+#
+# Checks whether or not the server already exists. We do this by searching
+# the protections table for the definition of a super-user.
+#
+server_initialized()
+{
+    debug "Checking if server is already initialized"
+    local ServerRoot=$1
+    local r=false
+
+    if [ -n "$ServerRoot" \
+        -a -n "$P4DExecute" \
+        -a -d "$ServerRoot" \
+        -a -f "$ServerRoot/db.counters"  \
+        -a -x "$P4DExecute" ]; then
+        debug "P4ROOT exists"
+        if $P4DExecute -r $ServerRoot -jd - db.protect | grep ' 255 ' > /dev/null; then
+            r=true
+        fi
+    fi
+
+    if $r; then
+        debug "Server is initialized"
+        return 0
+    else
+        debug "Server not initialized"
+        return 1
+    fi
+}
+
+start_HelixCoreServer_service() {
+    if [ "${EUID}" -eq 0 ]; then
+        sudo -u Perforce /usr/syno/bin/synosystemctl start "${HelixCoreServerServiceUnit}"
+    else
+        /usr/syno/bin/synosystemctl start "${HelixCoreServerServiceUnit}"
+    fi
+    return 0
+}
+
+stop_HelixCoreServer_service() {
+    if [ "${EUID}" -eq 0 ]; then
+        sudo -u Perforce /usr/syno/bin/synosystemctl stop "${HelixCoreServerServiceUnit}"
+    else
+        /usr/syno/bin/synosystemctl stop "${HelixCoreServerServiceUnit}"
+    fi
+    return 0
+}
