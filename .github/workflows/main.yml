@@ -28,6 +28,7 @@ jobs:
           sudo -E ./.ci/setup-toolchain.sh
         env:
           SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
+          DSM_VERSION: ${{ matrix.DSM_VERSION }}
 
       - name: Build Package
         run: |
