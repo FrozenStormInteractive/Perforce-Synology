@@ -21,7 +21,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Freeing up more disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
 
       - name: Setup Toolchain
         run: |
@@ -37,4 +42,3 @@ jobs:
           SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
           SPK_ARCH: ${{ matrix.SPK_ARCH }}
           DSM_VERSION: ${{ matrix.DSM_VERSION }}
-          SPK_PACKAGE_VERSION: ${{ github.event.inputs.version }}

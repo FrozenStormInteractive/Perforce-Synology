@@ -4,7 +4,7 @@
 source /pkgscripts/include/pkg_util.sh
 
 package="HelixCoreServer"
-version="22.2-0001"
+version="22.2-${SPK_PACKAGE_VERSION:-0001}"
 displayname="Perforce Helix Core Server (p4d)"
 os_min_ver="7.0-40000"
 maintainer="Perforce Software, Inc."
