@@ -9,6 +9,7 @@ jobs:
   build:
     name: Build Packages
     strategy:
+      fail-fast: false
       matrix:
         include:
           - SPK_PLATFORM: braswell
@@ -22,11 +23,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Freeing up more disk space
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
 
       - name: Setup Toolchain
         run: |

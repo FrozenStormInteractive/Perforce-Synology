@@ -3,14 +3,12 @@
 set -x
 set -e
 
+SOURCE_DIRNAME=helixcoreserverpackage
 # move build files into source dir
 mkdir -p /toolkit/source
-cp -R $GITHUB_WORKSPACE /toolkit/source/helixcoreserverpackage
+cp -R $GITHUB_WORKSPACE /toolkit/source/$SOURCE_DIRNAME
 
-cd /toolkit/source/helixcoreserverpackage
+cd /toolkit/source/$SOURCE_DIRNAME
 
 # build spk
-/toolkit/pkgscripts-ng/PkgCreate.py -p $SPK_PLATFORM -c helixcoreserverpackage
-
-# copy spk to github workspace
-cp /toolkit/build_env/ds.$SPK_PLATFORM-$DSM_VERSION/image/packages/HelixCoreServer-$SPK_PLATFORM-$SPK_PACKAGE_VERSION.spk $GITHUB_WORKSPACE/
+/toolkit/pkgscripts-ng/PkgCreate.py -v $DSM_VERSION -p $SPK_PLATFORM -c $SOURCE_DIRNAME
