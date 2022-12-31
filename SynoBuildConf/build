@@ -11,7 +11,7 @@ case ${MakeClean} in
 			elif [ "$ARCH" = "i686" ]; then
 				P4D_URL="https://www.perforce.com/downloads/perforce/r${P4D_VERSION}/bin.linux26x86/helix-core-server.tgz"
 			else
-				ERROR "Unsupported architecture."
+				ERROR "Unsupported architecture '$ARCH'."
 				exit 1
 			fi
 
