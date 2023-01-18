@@ -1,5 +1,5 @@
-PKG_DIR="/var/packages/${SYNOPKG_PKGNAME}"
-SYNOPKG_PKGETC="${PKG_DIR}/etc"
+PKG_DIR="/var/packages/$SYNOPKG_PKGNAME"
+SYNOPKG_PKGETC="$PKG_DIR/etc"
 
 SHARE=Perforce
 [ -z "$SHARE_PATH" ] && SHARE_PATH="$SYNOPKG_PKGDEST_VOL/$SHARE"
@@ -18,7 +18,7 @@ debug()
 }
 
 start_HelixCoreServerCtl() {
-    if [ "${EUID}" -eq 0 ]; then
+    if [ "$EUID" -eq 0 ]; then
         sudo -u Perforce $P4DCtlExecute start -q -a
     else
         $P4DCtlExecute start -q -a
@@ -26,7 +26,7 @@ start_HelixCoreServerCtl() {
 }
 
 stop_HelixCoreServerCtl() {
-    if [ "${EUID}" -eq 0 ]; then
+    if [ "$EUID" -eq 0 ]; then
         sudo -u Perforce $P4DCtlExecute stop -q -a
     else
         $P4DCtlExecute stop -q -a
@@ -34,7 +34,7 @@ stop_HelixCoreServerCtl() {
 }
 
 status_HelixCoreServerCtl() {
-    if [ "${EUID}" -eq 0 ]; then
+    if [ "$EUID" -eq 0 ]; then
         sudo -u Perforce $P4DCtlExecute -q status -q -a
     else
         $P4DCtlExecute -q status -q -a
@@ -44,8 +44,12 @@ status_HelixCoreServerCtl() {
 p4dctlConfFilePath="$SYNOPKG_PKGETC/p4dctl-ng.conf"
 
 update_p4dctl_conf_file() {
-    # TODO
-    cat <<EOF > $p4dctlConfFilePath
+    if [ -f $p4dctlConfFilePath ]; then
+        json="$(jq --arg var "$SYNOPKG_PKGTMP" '.PidFileDirectory = $var' $p4dctlConfFilePath)" && echo -E "${json}" | jq . >$p4dctlConfFilePath
+        json="$(jq --arg var "$SHARE_PATH" '.DefaultServerRootDirectory = $var' $p4dctlConfFilePath)" && echo -E "${json}" | jq . >$p4dctlConfFilePath
+        json="$(jq --arg var "$P4DExecute" '.P4DExecute = $var' $p4dctlConfFilePath)" && echo -E "${json}" | jq . >$p4dctlConfFilePath
+    else
+        cat <<EOF > $p4dctlConfFilePath
 {
     "PidFileDirectory": "$SYNOPKG_PKGTMP",
     "DefaultServerRootDirectory": "$SHARE_PATH",
@@ -55,7 +59,5 @@ update_p4dctl_conf_file() {
     ]
 }
 EOF
-    
+    fi
 }
-
-

@@ -1,8 +1,6 @@
 #!/bin/bash
 # Copyright (C) 2000-2020 Synology Inc. All rights reserved.
 
-P4D_VERSION="22.2"
-
 ## Install SSL Certificates
 
 CertFileName="$RANDOM.pem"
@@ -36,30 +34,33 @@ echo "Updated OpenSSL to $(openssl version)"
 
 ## Download Perforce Binaries
 
+[ -z "$P4D_VERSION" ] && P4D_VERSION="22.2"
+
+
 if [ ! -f "cache/helix-core-server.tgz" ]; then
+	echo "Downloading Helix Core Server v$P4D_VERSION"
+
 	if [ "$ARCH" = "x86_64" ]; then
-		P4D_URL="https://www.perforce.com/downloads/perforce/r${P4D_VERSION}/bin.linux26x86_64/helix-core-server.tgz"
+		P4D_URL="https://www.perforce.com/downloads/perforce/r$P4D_VERSION/bin.linux26x86_64/helix-core-server.tgz"
 	elif [ "$ARCH" = "i686" -o "$ARCH" = "x86" ]; then
-		P4D_URL="https://www.perforce.com/downloads/perforce/r${P4D_VERSION}/bin.linux26x86/helix-core-server.tgz"
+		P4D_URL="https://www.perforce.com/downloads/perforce/r$P4D_VERSION/bin.linux26x86/helix-core-server.tgz"
 	else
 		ERROR "Unsupported architecture '$ARCH'."
 		exit 1
 	fi
 
 	mkdir -p cache
-	curl -L ${P4D_URL} -o cache/helix-core-server.tgz > /dev/null 2>&1 || true
+	curl -L $P4D_URL -o cache/helix-core-server.tgz > /dev/null 2>&1 || true
 fi
 mkdir -p HelixCoreServer
 tar -xvzf cache/helix-core-server.tgz -C HelixCoreServer > /dev/null 2>&1 || true
 
 ## Download Helix Core Server Utils
 
-if [ -f "cache/cache/HelixCoreServerUtils.tgz" ]; then
+if [ -f "cache/HelixCoreServerUtils.tgz" ]; then
 	mkdir -p HelixCoreServerUtils
 	tar -xvzf cache/HelixCoreServerUtils.tgz -C HelixCoreServerUtils > /dev/null 2>&1 || true
 fi
-
-
 
 if [ "$ARCH" = "x86_64" ]; then
 	NetRuntime="linux-x64"

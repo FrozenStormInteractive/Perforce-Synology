@@ -30,7 +30,7 @@ create_package_tgz() {
 	cp -av ui $package_tgz_dir
 
 	### create package.tgz $1: source_dir $2: dest_dir
-	pkg_make_package $package_tgz_dir "${PKG_DIR}"
+	pkg_make_package $package_tgz_dir "$PKG_DIR"
 }
 
 create_spk() {
@@ -49,7 +49,7 @@ create_spk() {
 	# Please put the result spk into /image/packages
 	# spk name functions: pkg_get_spk_name pkg_get_spk_unified_name pkg_get_spk_family_name
 	mkdir -p /image/packages
-	pkg_make_spk ${PKG_DIR} "/image/packages" $(pkg_get_spk_family_name)
+	pkg_make_spk $PKG_DIR "/image/packages" $(pkg_get_spk_family_name)
 }
 
 main() {

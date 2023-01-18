@@ -5,7 +5,7 @@
 ### Actions after package upgraded.
 ### ex. restore user settings.
 
-. /var/packages/${SYNOPKG_PKGNAME}/scripts/pkg_utils
+. /var/packages/$SYNOPKG_PKGNAME/scripts/pkg_utils
 
 update_p4dctl_conf_file
 
@@ -17,7 +17,7 @@ if [ "$ShouldUpgradeDatabase" = y \
     -o "$ShouldUpgradeDatabase" = true \
     -o "$ShouldUpgradeDatabase" = 0 ]; then
 
-    if [ "${EUID}" -eq 0 ]; then
+    if [ "$EUID" -eq 0 ]; then
         sudo -u Perforce $P4DCtlExecute upgrade -a
     else
         $P4DCtlExecute upgrade -a
