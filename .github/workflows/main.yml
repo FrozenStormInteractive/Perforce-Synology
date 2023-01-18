@@ -15,9 +15,9 @@ jobs:
           - SPK_PLATFORM: braswell
             SPK_ARCH: x86_64
             DSM_VERSION: "7.1"
-          - SPK_PLATFORM: evansport
-            SPK_ARCH: i686
-            DSM_VERSION: "7.1"
+          # - SPK_PLATFORM: evansport
+          #   SPK_ARCH: i686
+          #   DSM_VERSION: "7.1"
 
     runs-on: ubuntu-latest
 
