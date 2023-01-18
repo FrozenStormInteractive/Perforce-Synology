@@ -30,7 +30,7 @@ jobs:
         env:
           DSM_VERSION: ${{ matrix.DSM_VERSION }}
           SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
-          
+
       - name: Build Package
         run: |
           sudo -E ./.ci/build-package.sh

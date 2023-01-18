@@ -35,7 +35,6 @@ echo "Updated OpenSSL to $(openssl version)"
 
 [ -z "$P4D_VERSION" ] && P4D_VERSION="22.2"
 
-
 if [ ! -f "cache/helix-core-server.tgz" ]; then
 	echo "Downloading Helix Core Server v$P4D_VERSION"
 
@@ -56,9 +55,14 @@ tar -xvzf cache/helix-core-server.tgz -C HelixCoreServer > /dev/null 2>&1 || tru
 
 ## Download Helix Core Server Utils
 
+[ -z "$P4DUTILS_VERSION" ] && P4DUTILS_VERSION="main"
+
 if [ -f "cache/HelixCoreServerUtils.tgz" ]; then
 	mkdir -p HelixCoreServerUtils
 	tar -xvzf cache/HelixCoreServerUtils.tgz -C HelixCoreServerUtils > /dev/null 2>&1 || true
+else
+	git clone -n "https://github.com/FrozenStormInteractive/HelixCoreServerUtils" HelixCoreServerUtils
+	(cd HelixCoreServerUtils && git checkout $P4DUTILS_VERSION)
 fi
 
 if [ "$ARCH" = "x86_64" ]; then
