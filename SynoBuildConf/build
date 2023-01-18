@@ -93,7 +93,7 @@ cat <<EOF > "HelixCoreServerUtils/src/HelixCoreServerCtl/AppPaths.override.json"
 }
 EOF
 
-./dotnet/dotnet restore HelixCoreServerUtils/src/HelixCoreServerCtl/HelixCoreServerCtl.csproj --disable-build-servers -r $NetRuntime -v=q > /dev/null 2>&1 || true
+stdout=$(./dotnet/dotnet restore HelixCoreServerUtils/src/HelixCoreServerCtl/HelixCoreServerCtl.csproj --disable-build-servers -r $NetRuntime)
 if [ $? -eq 0 ]; then
 
 	Configuration=Debug
@@ -102,20 +102,21 @@ if [ $? -eq 0 ]; then
 	Configuration=Release
 	DebugType=none
 
-	./dotnet/dotnet publish HelixCoreServerUtils/src/HelixCoreServerCtl/HelixCoreServerCtl.csproj \
+	stdout=$(./dotnet/dotnet publish HelixCoreServerUtils/src/HelixCoreServerCtl/HelixCoreServerCtl.csproj \
 		--disable-build-servers -v=q -o HelixCoreServerCtl \
 		-r $NetRuntime \
 		--self-contained \
 		-p:PublishReadyToRun=true \
 		-p:DebugType=$DebugType \
-		-c $Configuration \
-		> /dev/null 2>&1 || true
+		-c $Configuration)
 	if [ $? -ne 0 ]; then
 		ERROR "Cannot build HelixCoreServerCtl"
+		echo -e "$stdout"
 		exit 1
 	fi
 else
 	ERROR "Cannot restore HelixCoreServerCtl"
+	echo -e "$stdout"
 	exit 1
 fi
 
