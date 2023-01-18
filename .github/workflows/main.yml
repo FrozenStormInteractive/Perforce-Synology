@@ -38,3 +38,12 @@ jobs:
           SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
           SPK_ARCH: ${{ matrix.SPK_ARCH }}
           DSM_VERSION: ${{ matrix.DSM_VERSION }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: HelixCoreServer-${{ matrix.SPK_ARCH }}.spk
+          path: |
+            /toolkit/result_spk/HelixCoreServer-*/HelixCoreServer-${{ matrix.SPK_ARCH }}-*.spk
+            !/toolkit/result_spk/HelixCoreServer-*.bad.*/
+            !/toolkit/result_spk/HelixCoreServer-*/HelixCoreServer-${{ matrix.SPK_ARCH }}-*_debug.spk
