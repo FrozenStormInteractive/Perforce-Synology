@@ -7,6 +7,8 @@
 
 . /var/packages/${SYNOPKG_PKGNAME}/scripts/pkg_utils
 
+update_p4dctl_conf_file
+
 ShouldUpgradeDatabase=$UiInput_UpgradeDatabase
 
 if [ "$ShouldUpgradeDatabase" = y \
@@ -15,12 +17,10 @@ if [ "$ShouldUpgradeDatabase" = y \
     -o "$ShouldUpgradeDatabase" = true \
     -o "$ShouldUpgradeDatabase" = 0 ]; then
 
-    if [ -f "${HelixCoreServerConfigFile}" ]; then
-        P4CASE=11
-        export $(grep -v '^#' "${HelixCoreServerConfigFile}" | xargs -d '\n')
-
-        stop_HelixCoreServer_service
-        $P4DExecute -r "$P4ROOT" -C $P4CASE -L ../logs/log -J ../journals/journal -xu > /dev/null
+    if [ "${EUID}" -eq 0 ]; then
+        sudo -u Perforce $P4DCtlExecute upgrade -a
+    else
+        $P4DCtlExecute upgrade -a
     fi
 fi
 

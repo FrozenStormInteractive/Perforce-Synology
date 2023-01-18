@@ -5,27 +5,31 @@
 
 case $1 in
     start)
-        if ! start_HelixCoreServer_service; then
-            exit 1
-        else
-            echo "the Helix Core Server has been successfully started" > $SYNOPKG_TEMP_LOGFILE
-        fi
-        exit 0
+        start_HelixCoreServerCtl
+        case "$?" in
+            0) 
+                exit 0
+                ;;
+            *) 
+                exit 1
+                ;;
+        esac
         ;;
     stop)
-        if ! stop_HelixCoreServer_service; then
-            exit 1
-        else
-            echo "the Helix Core Server has been successfully stopped" > $SYNOPKG_TEMP_LOGFILE
-        fi
-        exit 0
+        stop_HelixCoreServerCtl
+        case "$?" in
+            0)
+                exit 0
+                ;;
+            *)
+                exit 1
+                ;;
+        esac
         ;;
     status)
-        if  [ "active" = "$(/usr/syno/bin/synosystemctl get-active-status ${HelixCoreServerServiceUnit})" ]; then
-            exit 0
-        else
-            exit 1
-        fi
+        status_HelixCoreServerCtl
+        echo "$?"
+        exit "$?"
         ;;
     killall)
         ;;

@@ -3,20 +3,116 @@
 
 P4D_VERSION="22.2"
 
+## Install SSL Certificates
+
+CertFileName="$RANDOM.pem"
+curl -L "https://curl.se/ca/cacert.pem" -o /usr/share/ca-certificates/trust-source/$CertFileName -k > /dev/null 2>&1 || true
+update-ca-trust
+rm /usr/share/ca-certificates/trust-source/$CertFileName
+
 case ${MakeClean} in
 	[Yy][Ee][Ss])
-		if [ ! -f "helix-core-server.tgz" ]; then
-			if [ "$ARCH" = "x86_64" ]; then
-				P4D_URL="https://www.perforce.com/downloads/perforce/r${P4D_VERSION}/bin.linux26x86_64/helix-core-server.tgz"
-			elif [ "$ARCH" = "i686" -o "$ARCH" = "x86" ]; then
-				P4D_URL="https://www.perforce.com/downloads/perforce/r${P4D_VERSION}/bin.linux26x86/helix-core-server.tgz"
-			else
-				ERROR "Unsupported architecture '$ARCH'."
-				exit 1
-			fi
-
-			curl -L ${P4D_URL} -o helix-core-server.tgz -k
-		fi
-		tar -xvzf helix-core-server.tgz > /dev/null 2>&1 || true
 		;;
 esac
+
+## Update OpenSSL
+
+if [ ! -f "cache/openssl.tgz" ]; then
+	mkdir -p cache
+	OPENSSL_BIN_URL="https://center.conan.io/artifactory/api/conan/conan-center/v1/files/_/openssl/3.0.7/_/cc573a614ed2f41306d4eec2823bbbca/package/1f37dfb6917e56741ddaf050152a807d23390f01/d669c6a55001c650c1da59234dfcb334/conan_package.tgz"
+	curl -L $OPENSSL_BIN_URL -o cache/openssl.tgz -k > /dev/null 2>&1 || true
+fi
+
+mkdir -p cache/openssl
+tar -xvzf cache/openssl.tgz -C cache/openssl > /dev/null 2>&1 || true
+
+cp cache/openssl/bin/openssl /usr/bin/openssl
+cp cache/openssl/lib/libcrypto.so.3 /usr/lib/libcrypto.so.3
+ln -f /usr/lib/libcrypto.so.3 /usr/lib/libcrypto.so
+cp cache/openssl/lib/libssl.so.3 /usr/lib/libssl.so.3
+ln -f /usr/lib/libssl.so.3 /usr/lib/libssl.so
+
+echo "Updated OpenSSL to $(openssl version)"
+
+## Download Perforce Binaries
+
+if [ ! -f "cache/helix-core-server.tgz" ]; then
+	if [ "$ARCH" = "x86_64" ]; then
+		P4D_URL="https://www.perforce.com/downloads/perforce/r${P4D_VERSION}/bin.linux26x86_64/helix-core-server.tgz"
+	elif [ "$ARCH" = "i686" -o "$ARCH" = "x86" ]; then
+		P4D_URL="https://www.perforce.com/downloads/perforce/r${P4D_VERSION}/bin.linux26x86/helix-core-server.tgz"
+	else
+		ERROR "Unsupported architecture '$ARCH'."
+		exit 1
+	fi
+
+	mkdir -p cache
+	curl -L ${P4D_URL} -o cache/helix-core-server.tgz > /dev/null 2>&1 || true
+fi
+mkdir -p HelixCoreServer
+tar -xvzf cache/helix-core-server.tgz -C HelixCoreServer > /dev/null 2>&1 || true
+
+## Download Helix Core Server Utils
+
+if [ -f "cache/cache/HelixCoreServerUtils.tgz" ]; then
+	mkdir -p HelixCoreServerUtils
+	tar -xvzf cache/HelixCoreServerUtils.tgz -C HelixCoreServerUtils > /dev/null 2>&1 || true
+fi
+
+
+
+if [ "$ARCH" = "x86_64" ]; then
+	NetRuntime="linux-x64"
+elif [ "$ARCH" = "i686" -o "$ARCH" = "x86" ]; then
+	NetRuntime="linux-x86"
+else
+	ERROR "Unsupported architecture '$ARCH'."
+	exit 1
+fi
+
+## Download .Net SDK
+
+if [ -f "cache/dotnet-sdk.tgz" ]; then
+	mkdir -p dotnet
+	tar -xvzf cache/dotnet-sdk.tgz -C dotnet > /dev/null 2>&1 || true
+else
+	curl -L "https://dot.net/v1/dotnet-install.sh" -o "dotnet-install.sh" > /dev/null 2>&1 || true
+	chmod +x "dotnet-install.sh"
+	./dotnet-install.sh --install-dir "dotnet" --channel "STS" --no-path --jsonfile "HelixCoreServerUtils/global.json" > /dev/null 2>&1 || true
+fi
+
+## Build HelixCoreServerCtl
+
+cat <<EOF > "HelixCoreServerUtils/src/HelixCoreServerCtl/AppPaths.override.json"
+{
+    "ConfigFile": "/var/packages/HelixCoreServer/etc/p4dctl-ng.conf"
+}
+EOF
+
+./dotnet/dotnet restore HelixCoreServerUtils/src/HelixCoreServerCtl/HelixCoreServerCtl.csproj --disable-build-servers -r $NetRuntime -v=q > /dev/null 2>&1 || true
+if [ $? -eq 0 ]; then
+
+	Configuration=Debug
+	DebugType=embedded
+
+	Configuration=Release
+	DebugType=none
+
+	./dotnet/dotnet publish HelixCoreServerUtils/src/HelixCoreServerCtl/HelixCoreServerCtl.csproj \
+		--disable-build-servers -v=q -o HelixCoreServerCtl \
+		-r $NetRuntime \
+		--self-contained \
+		-p:PublishReadyToRun=true \
+		-p:DebugType=$DebugType \
+		-c $Configuration \
+		> /dev/null 2>&1 || true
+	if [ $? -ne 0 ]; then
+		ERROR "Cannot build HelixCoreServerCtl"
+		exit 1
+	fi
+else
+	ERROR "Cannot restore HelixCoreServerCtl"
+	exit 1
+fi
+
+exit 0
