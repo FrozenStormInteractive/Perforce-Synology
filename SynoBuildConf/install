@@ -1,5 +1,4 @@
 #!/bin/bash
-# Copyright (C) 2000-2020 Synology Inc. All rights reserved.
 
 ### Use PKG_DIR as working directory.
 PKG_DIR=/tmp/_test_spk
@@ -19,18 +18,18 @@ create_package_tgz() {
 
 	### install binaries
 	mkdir -p $binary_dir
-	cp -av p4 $binary_dir
-	cp -av p4broker $binary_dir
-	cp -av p4d $binary_dir
-	cp -av p4p $binary_dir
+	cp -av HelixCoreServer/p4 $binary_dir
+	cp -av HelixCoreServer/p4broker $binary_dir
+	cp -av HelixCoreServer/p4d $binary_dir
+	cp -av HelixCoreServer/p4p $binary_dir
+
+	cp -RTv HelixCoreServerCtl $binary_dir
 
 	### Install UI files
 	cp -av ui $package_tgz_dir
 
-	cp -av etc $package_tgz_dir
-
 	### create package.tgz $1: source_dir $2: dest_dir
-	pkg_make_package $package_tgz_dir "${PKG_DIR}"
+	pkg_make_package $package_tgz_dir "$PKG_DIR"
 }
 
 create_spk() {
@@ -38,7 +37,6 @@ create_spk() {
 	cp -av PACKAGE_ICON*.PNG $PKG_DIR
 	cp -av WIZARD_UIFILES $PKG_DIR
 	cp -av conf $PKG_DIR
-	cp -av etc $PKG_DIR
 	cp -av ui $PKG_DIR
 	cp -av LICENSE $PKG_DIR
 
@@ -50,7 +48,7 @@ create_spk() {
 	# Please put the result spk into /image/packages
 	# spk name functions: pkg_get_spk_name pkg_get_spk_unified_name pkg_get_spk_family_name
 	mkdir -p /image/packages
-	pkg_make_spk ${PKG_DIR} "/image/packages" $(pkg_get_spk_family_name)
+	pkg_make_spk $PKG_DIR "/image/packages" $(pkg_get_spk_family_name)
 }
 
 main() {

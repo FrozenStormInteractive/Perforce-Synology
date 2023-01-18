@@ -1,9 +1,13 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Perforce Helix Core Server Version (xx.x):'
+        required: true
+      packageVersion:
+        description: 'Package Version (xxxx):'
 
 jobs:
   build:
@@ -28,23 +32,14 @@ jobs:
         run: |
           sudo -E ./.ci/setup-toolchain.sh
         env:
-          DSM_VERSION: ${{ matrix.DSM_VERSION }}
           SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
+          DSM_VERSION: ${{ matrix.DSM_VERSION }}
 
       - name: Build Package
         run: |
           sudo -E ./.ci/build-package.sh
         env:
-          DSM_VERSION: ${{ matrix.DSM_VERSION }}
           SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
           SPK_ARCH: ${{ matrix.SPK_ARCH }}
-          SPK_PACKAGE_BUILD_NUMBER: ${{ github.run_number }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: HelixCoreServer-${{ matrix.SPK_ARCH }}.spk
-          path: |
-            /toolkit/result_spk/HelixCoreServer-*/HelixCoreServer-${{ matrix.SPK_ARCH }}-*.spk
-            !/toolkit/result_spk/HelixCoreServer-*.bad.*/
-            !/toolkit/result_spk/HelixCoreServer-*/HelixCoreServer-${{ matrix.SPK_ARCH }}-*_debug.spk
+          DSM_VERSION: ${{ matrix.DSM_VERSION }}
+          SPK_PACKAGE_VERSION: ${{ github.event.inputs.version }}

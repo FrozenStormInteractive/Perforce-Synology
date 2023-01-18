@@ -4,11 +4,9 @@
             "usr/local/bin/p4",
             "usr/local/bin/p4broker",
             "usr/local/bin/p4d",
-            "usr/local/bin/p4p"
+            "usr/local/bin/p4p",
+            "usr/local/bin/p4dctl-ng"
         ]
-    },
-    "port-config": {
-        "protocol-file": "etc/HelixCoreServer.sc"
     },
     "data-share": {
         "shares": [
@@ -19,6 +17,5 @@
                 }
             }
         ]
-    },
-    "systemd-user-unit":{}
+    }
 }

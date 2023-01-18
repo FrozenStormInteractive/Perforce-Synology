@@ -1,16 +1,14 @@
-PKG_DIR="/var/packages/${SYNOPKG_PKGNAME}"
+PKG_DIR="/var/packages/$SYNOPKG_PKGNAME"
+SYNOPKG_PKGETC="$PKG_DIR/etc"
 
 SHARE=Perforce
-[ -z "$P4ROOT" ] && P4ROOT="$SYNOPKG_PKGDEST_VOL/$SHARE"
+[ -z "$SHARE_PATH" ] && SHARE_PATH="$SYNOPKG_PKGDEST_VOL/$SHARE"
 [ -z "$DEBUG" ] && DEBUG=true # TODO DEBUG=false
 
 P4DExecute="$SYNOPKG_PKGDEST/usr/local/bin/p4d"
-P4Execute="$SYNOPKG_PKGDEST/usr/local/bin/p4"
+P4DCtlExecute="$SYNOPKG_PKGDEST/usr/local/bin/p4dctl-ng"
 
-HelixCoreServerServiceUnit="pkguser-HelixCoreServer-p4d"
-HelixCoreServerConfigFile="${SYNOPKG_PKGVAR}/p4d.env"
-
-DEBUGLOGFILE="$P4ROOT/install_log"
+DEBUGLOGFILE="$SHARE_PATH/install_log"
 debug()
 {
     $DEBUG || return 0
@@ -19,50 +17,47 @@ debug()
     echo -e "$1" >&2 >> $DEBUGLOGFILE || true
 }
 
-#
-# Checks whether or not the server already exists. We do this by searching
-# the protections table for the definition of a super-user.
-#
-server_initialized()
+start_HelixCoreServerCtl() {
+    if [ "$EUID" -eq 0 ]; then
+        sudo -u Perforce $P4DCtlExecute start -q -a
+    else
+        $P4DCtlExecute start -q -a
+    fi
+}
+
+stop_HelixCoreServerCtl() {
+    if [ "$EUID" -eq 0 ]; then
+        sudo -u Perforce $P4DCtlExecute stop -q -a
+    else
+        $P4DCtlExecute stop -q -a
+    fi
+}
+
+status_HelixCoreServerCtl() {
+    if [ "$EUID" -eq 0 ]; then
+        sudo -u Perforce $P4DCtlExecute -q status -q -a
+    else
+        $P4DCtlExecute -q status -q -a
+    fi
+}
+
+p4dctlConfFilePath="$SYNOPKG_PKGETC/p4dctl-ng.conf"
+
+update_p4dctl_conf_file() {
+    if [ -f $p4dctlConfFilePath ]; then
+        json="$(jq --arg var "$SYNOPKG_PKGTMP" '.PidFileDirectory = $var' $p4dctlConfFilePath)" && echo -E "${json}" | jq . >$p4dctlConfFilePath
+        json="$(jq --arg var "$SHARE_PATH" '.DefaultServerRootDirectory = $var' $p4dctlConfFilePath)" && echo -E "${json}" | jq . >$p4dctlConfFilePath
+        json="$(jq --arg var "$P4DExecute" '.P4DExecute = $var' $p4dctlConfFilePath)" && echo -E "${json}" | jq . >$p4dctlConfFilePath
+    else
+        cat <<EOF > $p4dctlConfFilePath
 {
-    debug "Checking if server is already initialized"
-    local ServerRoot=$1
-    local r=false
-
-    if [ -n "$ServerRoot" \
-        -a -n "$P4DExecute" \
-        -a -d "$ServerRoot" \
-        -a -f "$ServerRoot/db.counters"  \
-        -a -x "$P4DExecute" ]; then
-        debug "P4ROOT exists"
-        if $P4DExecute -r $ServerRoot -jd - db.protect | grep ' 255 ' > /dev/null; then
-            r=true
-        fi
-    fi
-
-    if $r; then
-        debug "Server is initialized"
-        return 0
-    else
-        debug "Server not initialized"
-        return 1
-    fi
+    "PidFileDirectory": "$SYNOPKG_PKGTMP",
+    "DefaultServerRootDirectory": "$SHARE_PATH",
+    "P4DExecute": "$P4DExecute",
+    "Includes": [
+        "$SYNOPKG_PKGETC/p4dctl-ng.conf.d"
+    ]
 }
-
-start_HelixCoreServer_service() {
-    if [ "${EUID}" -eq 0 ]; then
-        sudo -u Perforce /usr/syno/bin/synosystemctl start "${HelixCoreServerServiceUnit}"
-    else
-        /usr/syno/bin/synosystemctl start "${HelixCoreServerServiceUnit}"
+EOF
     fi
-    return 0
-}
-
-stop_HelixCoreServer_service() {
-    if [ "${EUID}" -eq 0 ]; then
-        sudo -u Perforce /usr/syno/bin/synosystemctl stop "${HelixCoreServerServiceUnit}"
-    else
-        /usr/syno/bin/synosystemctl stop "${HelixCoreServerServiceUnit}"
-    fi
-    return 0
 }
