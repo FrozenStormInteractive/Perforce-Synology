@@ -3,6 +3,10 @@
 set -x
 set -e
 
+if [ $SPK_PACKAGE_BUILD_NUMBER =~ "^[0-9]+$" ]; then
+   printf -v SPK_PACKAGE_BUILD_NUMBER "%04d" "$SPK_PACKAGE_BUILD_NUMBER"
+fi
+
 SOURCE_DIRNAME=helixcoreserverpackage
 # move build files into source dir
 mkdir -p /toolkit/source
