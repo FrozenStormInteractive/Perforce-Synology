@@ -3,7 +3,7 @@
 ## Install SSL Certificates
 
 CertFileName="$RANDOM.pem"
-curl -L "https://curl.se/ca/cacert.pem" -o /usr/share/ca-certificates/trust-source/$CertFileName -k > /dev/null 2>&1 || true
+curl -L "https://curl.se/ca/cacert.pem" -o /usr/share/ca-certificates/trust-source/$CertFileName -k > /dev/null 2>&1
 update-ca-trust
 rm /usr/share/ca-certificates/trust-source/$CertFileName
 
@@ -15,13 +15,14 @@ esac
 ## Update OpenSSL
 
 if [ ! -f "cache/openssl.tgz" ]; then
+	echo "Downloading OpenSSL"
 	mkdir -p cache
 	OPENSSL_BIN_URL="https://center.conan.io/artifactory/api/conan/conan-center/v1/files/_/openssl/3.0.7/_/cc573a614ed2f41306d4eec2823bbbca/package/1f37dfb6917e56741ddaf050152a807d23390f01/d669c6a55001c650c1da59234dfcb334/conan_package.tgz"
-	curl -L $OPENSSL_BIN_URL -o cache/openssl.tgz -k > /dev/null 2>&1 || true
+	curl -L $OPENSSL_BIN_URL -o cache/openssl.tgz -k > /dev/null 2>&1
 fi
 
 mkdir -p cache/openssl
-tar -xvzf cache/openssl.tgz -C cache/openssl > /dev/null 2>&1 || true
+tar -xvzf cache/openssl.tgz -C cache/openssl > /dev/null 2>&1
 
 cp cache/openssl/bin/openssl /usr/bin/openssl
 cp cache/openssl/lib/libcrypto.so.3 /usr/lib/libcrypto.so.3
@@ -48,10 +49,10 @@ if [ ! -f "cache/helix-core-server.tgz" ]; then
 	fi
 
 	mkdir -p cache
-	curl -L $P4D_URL -o cache/helix-core-server.tgz > /dev/null 2>&1 || true
+	curl -L $P4D_URL -o cache/helix-core-server.tgz > /dev/null 2>&1
 fi
 mkdir -p HelixCoreServer
-tar -xvzf cache/helix-core-server.tgz -C HelixCoreServer > /dev/null 2>&1 || true
+tar -xvzf cache/helix-core-server.tgz -C HelixCoreServer > /dev/null 2>&1
 
 ## Download Helix Core Server Utils
 
@@ -59,8 +60,9 @@ tar -xvzf cache/helix-core-server.tgz -C HelixCoreServer > /dev/null 2>&1 || tru
 
 if [ -f "cache/HelixCoreServerUtils.tgz" ]; then
 	mkdir -p HelixCoreServerUtils
-	tar -xvzf cache/HelixCoreServerUtils.tgz -C HelixCoreServerUtils > /dev/null 2>&1 || true
+	tar -xvzf cache/HelixCoreServerUtils.tgz -C HelixCoreServerUtils > /dev/null 2>&1
 else
+	echo "Downloading Helix Core Server Utils v$main"
 	git clone -n "https://github.com/FrozenStormInteractive/HelixCoreServerUtils" HelixCoreServerUtils
 	(cd HelixCoreServerUtils && git checkout $P4DUTILS_VERSION)
 fi
@@ -78,11 +80,12 @@ fi
 
 if [ -f "cache/dotnet-sdk.tgz" ]; then
 	mkdir -p dotnet
-	tar -xvzf cache/dotnet-sdk.tgz -C dotnet > /dev/null 2>&1 || true
+	tar -xvzf cache/dotnet-sdk.tgz -C dotnet > /dev/null 2>&1
 else
-	curl -L "https://dot.net/v1/dotnet-install.sh" -o "dotnet-install.sh" > /dev/null 2>&1 || true
+	echo "Downloading dotnet sdk"
+	curl -L "https://dot.net/v1/dotnet-install.sh" -o "dotnet-install.sh" > /dev/null 2>&1
 	chmod +x "dotnet-install.sh"
-	./dotnet-install.sh --install-dir "dotnet" --channel "STS" --no-path --jsonfile "HelixCoreServerUtils/global.json" > /dev/null 2>&1 || true
+	./dotnet-install.sh --install-dir "dotnet" --channel "STS" --no-path --jsonfile "HelixCoreServerUtils/global.json" > /dev/null 2>&1
 fi
 
 ## Build HelixCoreServerCtl
@@ -93,14 +96,18 @@ cat <<EOF > "HelixCoreServerUtils/src/HelixCoreServerCtl/AppPaths.override.json"
 }
 EOF
 
+echo "Restore HelixCoreServerCtl"
 stdout=$(./dotnet/dotnet restore HelixCoreServerUtils/src/HelixCoreServerCtl/HelixCoreServerCtl.csproj --disable-build-servers -r $NetRuntime)
 if [ $? -eq 0 ]; then
-
-	Configuration=Debug
-	DebugType=embedded
-
-	Configuration=Release
-	DebugType=none
+	if [ $WithDebug = "Yes" ];  then
+		echo "Build HelixCoreServerCtl in debug mode"
+		Configuration=Debug
+		DebugType=embedded
+	else
+		echo "Build HelixCoreServerCtl"
+		Configuration=Release
+		DebugType=none
+	fi
 
 	stdout=$(./dotnet/dotnet publish HelixCoreServerUtils/src/HelixCoreServerCtl/HelixCoreServerCtl.csproj \
 		--disable-build-servers -v=q -o HelixCoreServerCtl \
