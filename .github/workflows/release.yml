@@ -1,4 +1,4 @@
-name: Build
+name: Release
 
 on:
   workflow_dispatch:
@@ -6,8 +6,6 @@ on:
       version:
         description: 'Perforce Helix Core Server Version (xx.x):'
         required: true
-      packageVersion:
-        description: 'Package Version (xxxx):'
 
 jobs:
   build:
@@ -19,9 +17,9 @@ jobs:
           - SPK_PLATFORM: braswell
             SPK_ARCH: x86_64
             DSM_VERSION: "7.1"
-          - SPK_PLATFORM: evansport
-            SPK_ARCH: i686
-            DSM_VERSION: "7.1"
+          # - SPK_PLATFORM: evansport
+          #   SPK_ARCH: i686
+          #   DSM_VERSION: "7.1"
 
     runs-on: ubuntu-latest
 
@@ -42,4 +40,14 @@ jobs:
           SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
           SPK_ARCH: ${{ matrix.SPK_ARCH }}
           DSM_VERSION: ${{ matrix.DSM_VERSION }}
-          SPK_PACKAGE_VERSION: ${{ github.event.inputs.version }}
+          P4D_VERSION: ${{ github.event.inputs.version }}
+          SPK_PACKAGE_BUILD_NUMBER: ${{ github.run_number }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: HelixCoreServer-${{ matrix.SPK_ARCH }}.spk
+          path: |
+            /toolkit/result_spk/HelixCoreServer-*/HelixCoreServer-${{ matrix.SPK_ARCH }}-*.spk
+            !/toolkit/result_spk/HelixCoreServer-*.bad.*/
+            !/toolkit/result_spk/HelixCoreServer-*/HelixCoreServer-${{ matrix.SPK_ARCH }}-*_debug.spk
