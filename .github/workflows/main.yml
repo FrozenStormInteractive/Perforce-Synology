@@ -43,23 +43,25 @@ jobs:
           SPK_BETA: ${{ github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) }}
           SPK_PACKAGE_BUILD_NUMBER: "${{ github.run_number }}"
 
+      - name: Rename artifact
+        run: |
+          cp \
+            /toolkit/result_spk/HelixCoreServer-${{ matrix.SPK_ARCH }}-${{ steps.build_package.outputs.package_version }}/HelixCoreServer-${{ matrix.SPK_ARCH }}-${{ steps.build_package.outputs.package_version }}.spk \
+            ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ matrix.SPK_ARCH }}-${{ matrix.DSM_VERSION }}.spk
+
       - id: upload_package
         name: Upload Package
         uses: actions/upload-artifact@v3
         with:
-          name: HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ matrix.SPK_ARCH }}-${{ matrix.DSM_VERSION }}.spk
-          path: |
-            /toolkit/result_spk/HelixCoreServer-*/HelixCoreServer-${{ matrix.SPK_ARCH }}-*.spk
-            !/toolkit/result_spk/HelixCoreServer-*.bad.*/
-            !/toolkit/result_spk/HelixCoreServer-*/HelixCoreServer-${{ matrix.SPK_ARCH }}-*_debug.spk
+          name: HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ matrix.SPK_ARCH }}-${{ matrix.DSM_VERSION }}
+          path: ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ matrix.SPK_ARCH }}-${{ matrix.DSM_VERSION }}.spk
+          if-no-files-found: error
 
   release:
     name: Upload Packages in Github Release
     needs: build
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/download-artifact@v3
         with:
@@ -69,4 +71,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            packages/HelixCoreServer-*.spk
+            packages/HelixCoreServer-*/*.spk
