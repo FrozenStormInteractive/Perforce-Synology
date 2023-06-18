@@ -2,12 +2,13 @@
 
 source /pkgscripts/include/pkg_util.sh
 
-package="HelixCoreServer"
-if [ ! -z "$SPK_PACKAGE_VERSION" ]; then
-    version="$SPK_PACKAGE_VERSION"
-else
-    version="${P4D_VERSION:-22.2}-${SPK_PACKAGE_BUILD_NUMBER:-0001}"
+
+if [ -z "$SPK_PACKAGE_VERSION" ]; then
+    SPK_PACKAGE_VERSION="${P4D_VERSION:-22.2}-${SPK_PACKAGE_BUILD_NUMBER:-0001}"
 fi
+
+package="HelixCoreServer"
+version="$SPK_PACKAGE_VERSION"
 displayname="Perforce Helix Core Server (p4d)"
 os_min_ver="7.0-40000"
 maintainer="Perforce Software, Inc."

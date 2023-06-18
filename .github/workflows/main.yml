@@ -23,14 +23,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Toolchain
+      - id: setup_toolchain
+        name: Setup Toolchain
         run: |
           sudo -E ./.ci/setup-toolchain.sh
         env:
           DSM_VERSION: ${{ matrix.DSM_VERSION }}
           SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
 
-      - name: Build Package
+      - id: build_package
+        name: Build Package
         run: |
           sudo -E ./.ci/build-package.sh
         env:
@@ -41,10 +43,11 @@ jobs:
           SPK_BETA: ${{ github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) }}
           SPK_PACKAGE_BUILD_NUMBER: "${{ github.run_number }}"
 
-      - name: Upload Package
+      - id: upload_package
+        name: Upload Package
         uses: actions/upload-artifact@v3
         with:
-          name: HelixCoreServer-${{ matrix.P4D_VERSION }}-${{ github.run_number }}-${{ matrix.SPK_ARCH }}-${{ matrix.DSM_VERSION }}.spk
+          name: HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ matrix.SPK_ARCH }}-${{ matrix.DSM_VERSION }}.spk
           path: |
             /toolkit/result_spk/HelixCoreServer-*/HelixCoreServer-${{ matrix.SPK_ARCH }}-*.spk
             !/toolkit/result_spk/HelixCoreServer-*.bad.*/
@@ -55,6 +58,8 @@ jobs:
     needs: build
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v3
         with:
