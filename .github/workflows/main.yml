@@ -46,7 +46,7 @@ jobs:
       - name: Rename artifact
         run: |
           cp \
-            /toolkit/result_spk/HelixCoreServer-${{ matrix.SPK_ARCH }}-${{ steps.build_package.outputs.package_version }}/HelixCoreServer-${{ matrix.SPK_ARCH }}-${{ steps.build_package.outputs.package_version }}.spk \
+            /toolkit/result_spk/HelixCoreServer-${{ steps.build_package.outputs.package_version }}/HelixCoreServer-${{ matrix.SPK_ARCH }}-${{ steps.build_package.outputs.package_version }}.spk \
             ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ matrix.SPK_ARCH }}-${{ matrix.DSM_VERSION }}.spk
 
       - id: upload_package
