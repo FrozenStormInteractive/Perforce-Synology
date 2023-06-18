@@ -21,5 +21,8 @@ dsmappname="com.FrozenStormInteractive.HelixCoreServer"
 thirdparty="yes"
 install_dep_services="syno-share.target"
 start_dep_services="network-online.target syno-share.target"
+if [ "$SPK_BETA" = true ] ; then
+    beta="yes"
+fi
 [ "$(caller)" != "0 NULL" ] && return 0
 pkg_dump_info

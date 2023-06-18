@@ -62,7 +62,7 @@ if [ -f "cache/HelixCoreServerUtils.tgz" ]; then
 	mkdir -p HelixCoreServerUtils
 	tar -xvzf cache/HelixCoreServerUtils.tgz -C HelixCoreServerUtils > /dev/null 2>&1
 else
-	echo "Downloading Helix Core Server Utils v$P4DUTILS_VERSION"
+	echo "Downloading Helix Core Server Utils $P4DUTILS_VERSION"
 	git clone -n "https://github.com/FrozenStormInteractive/HelixCoreServerUtils" HelixCoreServerUtils
 	(cd HelixCoreServerUtils && git checkout $P4DUTILS_VERSION)
 fi
