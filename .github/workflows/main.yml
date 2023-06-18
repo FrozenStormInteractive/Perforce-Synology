@@ -38,13 +38,13 @@ jobs:
           SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
           SPK_ARCH: ${{ matrix.SPK_ARCH }}
           P4D_VERSION: ${{ matrix.P4D_VERSION }}
-          SPK_BETA: ${{ github.event_name == 'release' && github.event.release.prerelease }}
-          SPK_PACKAGE_BUILD_NUMBER: "${{ github.run_number }}${{ github.event_name == 'release' && github.event.release.prerelease && 'b' || '' }}" 
+          SPK_BETA: ${{ github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) }}
+          SPK_PACKAGE_BUILD_NUMBER: "${{ github.run_number }}${{ github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) && 'b' || '' }}"
 
       - name: Upload Package
         uses: actions/upload-artifact@v3
         with:
-          name: HelixCoreServer-${{ matrix.P4D_VERSION }}-${{ matrix.SPK_ARCH }}-${{ matrix.DSM_VERSION }}.spk
+          name: HelixCoreServer-${{ matrix.P4D_VERSION }}-${{ github.run_number }}${{ github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) && 'b' || '' }}-${{ matrix.SPK_ARCH }}-${{ matrix.DSM_VERSION }}.spk
           path: |
             /toolkit/result_spk/HelixCoreServer-*/HelixCoreServer-${{ matrix.SPK_ARCH }}-*.spk
             !/toolkit/result_spk/HelixCoreServer-*.bad.*/
