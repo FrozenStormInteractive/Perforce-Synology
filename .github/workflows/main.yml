@@ -71,4 +71,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            packages/HelixCoreServer-*/*.spk
+            packages/HelixCoreServer-*/HelixCoreServer-*.spk
