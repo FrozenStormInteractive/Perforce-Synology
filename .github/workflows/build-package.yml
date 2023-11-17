@@ -1,0 +1,56 @@
+on:
+  workflow_call:
+    inputs:
+      P4D_VERSION:
+        required: true
+        type: string
+      DSM_VERSION:
+        required: true
+        type: string
+      SPK_PLATFORM:
+          required: true
+          type: string
+      SPK_ARCH:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: setup_toolchain
+        name: Setup Toolchain
+        run: |
+          sudo -E ./.ci/setup-toolchain.sh
+        env:
+          DSM_VERSION: ${{ inputs.DSM_VERSION }}
+          SPK_PLATFORM: ${{ inputs.SPK_PLATFORM }}
+
+      - id: build_package
+        name: Build Package
+        run: |
+          sudo -E ./.ci/build-package.sh
+        env:
+          DSM_VERSION: ${{ inputs.DSM_VERSION }}
+          SPK_PLATFORM: ${{ inputs.SPK_PLATFORM }}
+          SPK_ARCH: ${{ inputs.SPK_ARCH }}
+          P4D_VERSION: ${{ inputs.P4D_VERSION }}
+          SPK_BETA: ${{ github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) }}
+          SPK_PACKAGE_BUILD_NUMBER: "${{ github.run_number }}"
+
+      - name: Rename artifact
+        run: |
+          cp \
+            /toolkit/result_spk/HelixCoreServer-${{ steps.build_package.outputs.package_version }}/HelixCoreServer-${{ inputs.SPK_ARCH }}-${{ steps.build_package.outputs.package_version }}.spk \
+            ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}.spk
+
+      - id: upload_package
+        name: Upload Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}
+          path: ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}.spk
+          if-no-files-found: error
