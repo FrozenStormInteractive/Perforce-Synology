@@ -16,7 +16,7 @@ on:
 
 jobs:
   build:
-    name: Build Package
+    name: Build Package P4D=${{ inputs.P4D_VERSION }} Platform${{ inputs.SPK_PLATFORM }} DSM=${{ inputs.DSM_VERSION }} Arch=${{ inputs.SPK_ARCH }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
