@@ -15,11 +15,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        P4D_VERSION: ["22.2", "23.1"]
+        P4D_VERSION: ["22.2", "23.1", "23.2"]
         include:
           - SPK_PLATFORM: braswell
             SPK_ARCH: x86_64
             DSM_VERSION: "7.1"
+          - SPK_PLATFORM: braswell
+            SPK_ARCH: x86_64
+            DSM_VERSION: "7.2"
     steps:
       - uses: actions/checkout@v3
 
