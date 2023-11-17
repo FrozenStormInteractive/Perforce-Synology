@@ -1,10 +1,12 @@
-name: Build Test
+name: Build & Release
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -23,3 +25,19 @@ jobs:
       DSM_VERSION: ${{ matrix.DSM_VERSION }}
       SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
       SPK_ARCH: ${{ matrix.SPK_ARCH }}
+
+  release:
+    name: Upload Packages in Github Release
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          path: packages
+
+      - name: Upload artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            packages/HelixCoreServer-*/HelixCoreServer-*.spk

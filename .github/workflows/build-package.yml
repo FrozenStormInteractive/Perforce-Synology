@@ -13,10 +13,14 @@ on:
       SPK_ARCH:
         required: true
         type: string
+      PackageBuildNumber:
+        required: false
+        type: number
+        default: ${{ github.run_number }}
 
 jobs:
   build:
-    name: Build Package P4D=${{ inputs.P4D_VERSION }} Platform${{ inputs.SPK_PLATFORM }} DSM=${{ inputs.DSM_VERSION }} Arch=${{ inputs.SPK_ARCH }}
+    name: Build Package P4D=${{ inputs.P4D_VERSION }} Platform=${{ inputs.SPK_PLATFORM }} DSM=${{ inputs.DSM_VERSION }} Arch=${{ inputs.SPK_ARCH }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -39,7 +43,7 @@ jobs:
           SPK_ARCH: ${{ inputs.SPK_ARCH }}
           P4D_VERSION: ${{ inputs.P4D_VERSION }}
           SPK_BETA: ${{ github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) }}
-          SPK_PACKAGE_BUILD_NUMBER: "${{ github.run_number }}"
+          SPK_PACKAGE_BUILD_NUMBER: "${{ inputs.PackageBuildNumber }}"
 
       - name: Rename artifact
         run: |
