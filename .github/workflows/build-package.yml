@@ -16,7 +16,7 @@ on:
       PackageBuildNumber:
         required: false
         type: number
-        default: ${{ github.run_number }}
+        default: ${{ fromJSON(github.run_number) }}
 
 jobs:
   build:
