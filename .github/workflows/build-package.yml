@@ -23,7 +23,7 @@ jobs:
     name: Build Package P4D=${{ inputs.P4D_VERSION }} Platform=${{ inputs.SPK_PLATFORM }} DSM=${{ inputs.DSM_VERSION }} Arch=${{ inputs.SPK_ARCH }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - id: setup_toolchain
         name: Setup Toolchain
@@ -53,7 +53,7 @@ jobs:
 
       - id: upload_package
         name: Upload Package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}
           path: ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}.spk
