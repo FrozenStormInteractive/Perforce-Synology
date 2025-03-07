@@ -1,0 +1,20 @@
+{
+	"name": "Debian",
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+	"features": {
+		"ghcr.io/ChaosWars/synology-features/toolkit:1": {
+            "dsmVersion": "7.2",
+            "architecture": "geminilake"
+        }
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Configure tool-specific properties.
+	// "customizations": {},
+
+    "init": true,
+    "privileged": true,
+    "remoteUser": "root"
+}
