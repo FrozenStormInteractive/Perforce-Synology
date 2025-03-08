@@ -3,8 +3,6 @@ name: Build & Release
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
   release:
     types: [published]
 
@@ -16,15 +14,24 @@ jobs:
       matrix:
         P4D_VERSION: ["23.1", "23.2", "24.1", "24.2"]
         DSM_VERSION: ["7.1", "7.2"]
-        include:
-          - SPK_PLATFORM: braswell
-            SPK_ARCH: x86_64
+        SPK:
+          - PLATFORM: braswell
+            ARCH: x86_64
+          - PLATFORM: alpine
+            ARCH: armv7
+        exclude:
+          - P4D_VERSION: "23.1"
+            SPK.PLATFORM: alpine
+            SPK.ARCH: armv7
+          - P4D_VERSION: "23.2"
+            SPK.PLATFORM: alpine
+            SPK.ARCH: armv7
     uses: ./.github/workflows/build-package.yml
     with:
       P4D_VERSION: ${{ matrix.P4D_VERSION }}
       DSM_VERSION: ${{ matrix.DSM_VERSION }}
-      SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
-      SPK_ARCH: ${{ matrix.SPK_ARCH }}
+      SPK_PLATFORM: ${{ matrix.SPK.PLATFORM }}
+      SPK_ARCH: ${{ matrix.SPK.ARCH }}
 
   release:
     name: Upload Packages in Github Release

@@ -15,7 +15,18 @@ maintainer="Perforce Software, Inc."
 maintainer_url="https://www.perforce.com"
 distributor="Frozen Storm Interactive"
 distributor_url="https://www.frozenstorminteractive.com"
-arch="x86_64 i686"
+
+if [ "$(pkg_get_platform_family)" = "x86_64" ]; then
+    arch="x86_64"
+elif [ "$(pkg_get_platform_family)" = "i686" -o "$(pkg_get_platform_family)" = "x86" ]; then
+    arch="i686"
+elif [ "$(pkg_get_platform_family)" = "armv5" -o "$(pkg_get_platform_family)" = "armv7" -o "$(pkg_get_platform_family)" = "armv8" ]; then
+    arch="armv5 armv7 armv8"
+else
+    echo "Unsupported architecture '$(pkg_get_platform_family)'." >&2
+    exit 1
+fi
+
 description="Perforce Helix is a full-featured VCS that scales to thousands of users and millions of files."
 dsmuidir="ui"
 dsmappname="com.FrozenStormInteractive.HelixCoreServer"
