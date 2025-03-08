@@ -43,7 +43,7 @@ if [ ! -f "cache/helix-core-server.tgz" ]; then
 		P4D_URL="https://www.perforce.com/downloads/perforce/r$P4D_VERSION/bin.linux26x86_64/helix-core-server.tgz"
 	elif [ "$ARCH" = "i686" -o "$ARCH" = "x86" ]; then
 		P4D_URL="https://www.perforce.com/downloads/perforce/r$P4D_VERSION/bin.linux26x86/helix-core-server.tgz"
-    elif [ "$ARCH" = "armv5" -o "$ARCH" = "armv7" -o "$ARCH" = "armv8" ]; then
+    elif [ "$ARCH" = "arm" -o "$ARCH" = "arm64" ]; then
 		P4D_URL="https://www.perforce.com/downloads/perforce/r$P4D_VERSION/bin.linux26aarch64/helix-core-server.tgz"
 	else
 		echo "Unsupported architecture '$ARCH'." >&2
@@ -73,6 +73,10 @@ if [ "$ARCH" = "x86_64" ]; then
 	NetRuntime="linux-x64"
 elif [ "$ARCH" = "i686" -o "$ARCH" = "x86" ]; then
 	NetRuntime="linux-x86"
+elif [ "$ARCH" = "arm" ]; then
+	NetRuntime="linux-arm32"
+elif [ "$ARCH" = "arm64" ]; then
+	NetRuntime="linux-arm64"
 else
 	echo "Unsupported architecture '$ARCH'." >&2
 	exit 1
