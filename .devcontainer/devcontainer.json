@@ -16,5 +16,8 @@
 
     "init": true,
     "privileged": true,
-    "remoteUser": "root"
+    "remoteUser": "root",
+	"containerEnv": {
+		"WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"
+	}
 }
