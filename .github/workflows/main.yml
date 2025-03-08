@@ -19,6 +19,8 @@ jobs:
             ARCH: x86_64
           - PLATFORM: alpine
             ARCH: armv7
+          - PLATFORM: rtd1296
+            ARCH: armv8
         exclude:
           - P4D_VERSION: "23.1"
             SPK:
@@ -28,6 +30,14 @@ jobs:
             SPK:
               PLATFORM: alpine
               ARCH: armv7
+          - P4D_VERSION: "23.1"
+            SPK:
+              PLATFORM: rtd1296
+              ARCH: armv8
+          - P4D_VERSION: "23.2"
+            SPK:
+              PLATFORM: rtd1296
+              ARCH: armv8
     uses: ./.github/workflows/build-package.yml
     with:
       P4D_VERSION: ${{ matrix.P4D_VERSION }}
