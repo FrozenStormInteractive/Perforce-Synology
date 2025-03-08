@@ -20,8 +20,10 @@ if [ "$(pkg_get_platform_family)" = "x86_64" ]; then
     arch="x86_64"
 elif [ "$(pkg_get_platform_family)" = "i686" -o "$(pkg_get_platform_family)" = "x86" ]; then
     arch="i686"
-elif [ "$(pkg_get_platform_family)" = "armv5" -o "$(pkg_get_platform_family)" = "armv7" -o "$(pkg_get_platform_family)" = "armv8" ]; then
-    arch="armv5 armv7 armv8"
+elif [ "$(pkg_get_platform_family)" = "armv5" -o "$(pkg_get_platform_family)" = "armv7" ]; then
+    arch="armv5 armv7"
+elif [ "$(pkg_get_platform_family)" = "armv8" ]; then
+    arch="armv8"
 else
     echo "Unsupported architecture '$(pkg_get_platform_family)'." >&2
     exit 1
