@@ -74,7 +74,7 @@ if [ "$ARCH" = "x86_64" ]; then
 elif [ "$ARCH" = "i686" -o "$ARCH" = "x86" ]; then
 	NetRuntime="linux-x86"
 elif [ "$ARCH" = "arm" ]; then
-	NetRuntime="linux-arm32"
+	NetRuntime="linux-arm"
 elif [ "$ARCH" = "arm64" ]; then
 	NetRuntime="linux-arm64"
 else
