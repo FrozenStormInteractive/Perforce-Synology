@@ -21,11 +21,13 @@ jobs:
             ARCH: armv7
         exclude:
           - P4D_VERSION: "23.1"
-            SPK.PLATFORM: alpine
-            SPK.ARCH: armv7
+            SPK:
+              PLATFORM: alpine
+              ARCH: armv7
           - P4D_VERSION: "23.2"
-            SPK.PLATFORM: alpine
-            SPK.ARCH: armv7
+            SPK:
+              PLATFORM: alpine
+              ARCH: armv7
     uses: ./.github/workflows/build-package.yml
     with:
       P4D_VERSION: ${{ matrix.P4D_VERSION }}
