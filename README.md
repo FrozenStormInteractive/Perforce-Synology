@@ -25,7 +25,7 @@ For example, the package with number 0025 containing P4D 23.1 for Synology NAS w
 - At the top left of the Package Center window, next to the search bar, click on the "Manual install" button.
 - Select the spk file you have downloaded
 - Follow the instruction of the installer
-You msut create a perforce server now.
+You must create a perforce server now.
 
 Once installed, you need to create a Perforce server.
 
