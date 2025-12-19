@@ -25,6 +25,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Restore SDK cache
+        uses: actions/cache/restore@v4
+        with:
+          path: toolkit_tarballs/
+          key: synotoolkit-${{ inputs.SPK_PLATFORM }}-${{ inputs.DSM_VERSION }}
+          fail-on-cache-miss: true
+
+      - name: Copy Toolkit Tarballs
+        run: |
+          sudo mkdir -p /toolkit/
+          sudo mv toolkit_tarballs/ /toolkit/
+
       - id: setup_toolchain
         name: Setup Toolchain
         run: |

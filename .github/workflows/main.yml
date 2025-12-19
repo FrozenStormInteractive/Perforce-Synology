@@ -9,8 +9,40 @@ on:
     types: [published]
 
 jobs:
+  prepare-toolkit:
+    name: Prepare Toolkit
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        DSM_VERSION: ["7.1", "7.2"]
+        include:
+          - SPK_PLATFORM: braswell
+            SPK_ARCH: x86_64
+    env:
+      TAR_DIR: "toolkit_tarballs/"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check SDK cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.TAR_DIR }}
+          key: synotoolkit-${{ matrix.SPK_PLATFORM }}-${{ matrix.DSM_VERSION }}
+          lookup-only: true
+
+      - name: Download & extract SDKs
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          sudo mkdir -p "${TAR_DIR}"
+          sudo curl -fL --retry 2 --retry-all-errors --retry-delay 10 --output-dir "${TAR_DIR}" -O "https://global.synologydownload.com/download/ToolChain/toolkit/${{ matrix.DSM_VERSION }}/base/base_env-${{ matrix.DSM_VERSION }}.txz"
+          sudo curl -fL --retry 2 --retry-all-errors --retry-delay 10 --output-dir "${TAR_DIR}" -O "https://global.synologydownload.com/download/ToolChain/toolkit/${{ matrix.DSM_VERSION }}/${{ matrix.SPK_PLATFORM }}/ds.${{ matrix.SPK_PLATFORM }}-${{ matrix.DSM_VERSION }}.dev.txz"
+          sudo curl -fL --retry 2 --retry-all-errors --retry-delay 10 --output-dir "${TAR_DIR}" -O "https://global.synologydownload.com/download/ToolChain/toolkit/${{ matrix.DSM_VERSION }}/${{ matrix.SPK_PLATFORM }}/ds.${{ matrix.SPK_PLATFORM }}-${{ matrix.DSM_VERSION }}.env.txz"
+
   build:
-    name: Build Package
+    name: Build 
+    needs: prepare-toolkit
     strategy:
       fail-fast: false
       matrix:
