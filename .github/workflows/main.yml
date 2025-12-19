@@ -41,7 +41,7 @@ jobs:
           sudo curl -fL --retry 2 --retry-all-errors --retry-delay 10 --output-dir "${TAR_DIR}" -O "https://global.synologydownload.com/download/ToolChain/toolkit/${{ matrix.DSM_VERSION }}/${{ matrix.SPK_PLATFORM }}/ds.${{ matrix.SPK_PLATFORM }}-${{ matrix.DSM_VERSION }}.env.txz"
 
   build:
-    name: Build 
+    name: Build Package
     needs: prepare-toolkit
     strategy:
       fail-fast: false
