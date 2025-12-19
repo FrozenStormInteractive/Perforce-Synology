@@ -1,7 +1,6 @@
-# Helix Core Server Package for Synology
+# Perforce P4 Server Package for Synology
 
-Perforce Helix is a full-featured VCS that scales to thousands of users and millions of files, which allows you to maintain software source code, documents, or any type of file.
-
+Perforce P4 is a full-featured VCS that scales to thousands of users and millions of files, which allows you to maintain software source code, documents, or any type of file.
 
 ## Requirements
 
@@ -32,7 +31,7 @@ Once installed, you need to create a Perforce server.
 ## How to create a Perforce server:
 1. Sign in to DSM using an account with administrative privileges.
 1. Go to **Control Panel** > **Terminal & SNMP** > **Terminal** then enable **SSH service**.
-1. (Optional) Go to **Control Panel** > **Shared Folder** and create a shared folder for Helix Core server repositories.
+1. (Optional) Go to **Control Panel** > **Shared Folder** and create a shared folder for P4 server repositories.
    This package creates a  shared folder named ***Perforce*** by default
 1. On your computer, enter the command below to access Synology NAS via SSH:
    ```
