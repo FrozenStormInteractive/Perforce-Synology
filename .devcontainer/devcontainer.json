@@ -1,6 +1,6 @@
 {
 	"name": "Debian",
-	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+	"image": "mcr.microsoft.com/devcontainers/base:debian13",
 	"features": {
 		"ghcr.io/ChaosWars/synology-features/toolkit:1": {
             "dsmVersion": "7.2",
