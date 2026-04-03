@@ -65,7 +65,7 @@ jobs:
 
       - id: upload_package
         name: Upload Package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}
           path: ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}.spk
