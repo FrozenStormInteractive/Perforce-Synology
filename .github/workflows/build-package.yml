@@ -7,9 +7,6 @@ on:
       DSM_VERSION:
         required: true
         type: string
-      SPK_PLATFORM:
-          required: true
-          type: string
       SPK_ARCH:
         required: true
         type: string
@@ -27,7 +24,7 @@ on:
 
 jobs:
   build:
-    name: Build Package P4D=${{ inputs.P4D_VERSION }} Platform=${{ inputs.SPK_PLATFORM }} DSM=${{ inputs.DSM_VERSION }} Arch=${{ inputs.SPK_ARCH }}
+    name: Build Package P4D=${{ inputs.P4D_VERSION }} DSM=${{ inputs.DSM_VERSION }} Arch=${{ inputs.SPK_ARCH }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

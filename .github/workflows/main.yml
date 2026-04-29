@@ -68,14 +68,12 @@ jobs:
         P4D_VERSION: ["23.1", "23.2", "24.1", "24.2", "25.1", "25.2"]
         DSM_VERSION: ["7.1", "7.2", "7.3"]
         include:
-          - SPK_PLATFORM: braswell
-            SPK_ARCH: x86_64
+          - SPK_ARCH: x86_64
             CTL_ARCH: x64
     uses: ./.github/workflows/build-package.yml
     with:
       P4D_VERSION: ${{ matrix.P4D_VERSION }}
       DSM_VERSION: ${{ matrix.DSM_VERSION }}
-      SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
       SPK_ARCH: ${{ matrix.SPK_ARCH }}
       CTL_ARCH: ${{ matrix.CTL_ARCH }}
 
