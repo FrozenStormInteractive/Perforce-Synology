@@ -123,7 +123,7 @@ def make_spk(dsm_version: str, p4d_version: str, arch: str, build_number: int=No
     if out is None:
         out = f"HelixCoreServer-{version_string}-{arch}-{dsm_version}.spk"
     else:
-        os.makedirs(os.path.dirname(out), exist_ok=True)
+        os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
 
     with tarfile.open(out, "w:") as tar:
         tar.add("conf")
