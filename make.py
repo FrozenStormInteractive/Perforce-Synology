@@ -17,7 +17,7 @@ from datetime import datetime
 # package
 
 
-_SUPPORTED_ARCHS = ["x86_64"]
+_SUPPORTED_ARCHS = ["x86_64", "armv8"]
 
 
 def _output_gh_actions_variable(key, val):
@@ -66,9 +66,10 @@ def make_info(arch: str, version: str, uncompressed_size: int, beta: bool=False)
 
 
 def make_inner_package(p4d_version: str, arch: str):
-
-    if arch == "x86_64":
+    if arch in ["x86_64"]:
         p4_arch = "linux26x86_64"
+    elif arch in ["armv8"]:
+        p4_arch = "linux26aarch64"
     else:
         raise Exception(f"Unsupported Perforce arch: {arch}") 
 
