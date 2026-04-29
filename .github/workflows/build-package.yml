@@ -7,10 +7,10 @@ on:
       DSM_VERSION:
         required: true
         type: string
-      SPK_PLATFORM:
-          required: true
-          type: string
       SPK_ARCH:
+        required: true
+        type: string
+      CTL_ARCH:
         required: true
         type: string
       PackageBuildNumber:
@@ -24,53 +24,42 @@ on:
 
 jobs:
   build:
-    name: Build Package P4D=${{ inputs.P4D_VERSION }} Platform=${{ inputs.SPK_PLATFORM }} DSM=${{ inputs.DSM_VERSION }} Arch=${{ inputs.SPK_ARCH }}
+    name: Build Package P4D=${{ inputs.P4D_VERSION }} DSM=${{ inputs.DSM_VERSION }} Arch=${{ inputs.SPK_ARCH }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
-      - name: Restore SDK cache
-        uses: actions/cache/restore@v5
+      - uses: actions/download-artifact@v8
         with:
-          path: toolkit_tarballs/
-          key: synotoolkit-${{ inputs.SPK_PLATFORM }}-${{ inputs.DSM_VERSION }}
-          fail-on-cache-miss: true
+          name: HelixCoreServerCtl-${{ inputs.CTL_ARCH }}
+          path: out/HelixCoreServerCtl
 
-      - name: Copy Toolkit Tarballs
-        run: |
-          sudo mkdir -p /toolkit/
-          sudo mv toolkit_tarballs/ /toolkit/
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
 
-      - id: setup_toolchain
-        name: Setup Toolchain
-        run: |
-          sudo -E ./.ci/setup-toolchain.sh
-        env:
-          DSM_VERSION: ${{ inputs.DSM_VERSION }}
-          SPK_PLATFORM: ${{ inputs.SPK_PLATFORM }}
+      - run: pip install -r requirements.txt
 
       - id: build_package
-        name: Build Package
         run: |
-          sudo -E ./.ci/build-package.sh
-        env:
-          DSM_VERSION: ${{ inputs.DSM_VERSION }}
-          SPK_PLATFORM: ${{ inputs.SPK_PLATFORM }}
-          SPK_ARCH: ${{ inputs.SPK_ARCH }}
-          P4D_VERSION: ${{ inputs.P4D_VERSION }}
-          SPK_BETA: ${{ github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) || inputs.Beta }}
-          SPK_PACKAGE_BUILD_NUMBER: "${{ inputs.PackageBuildNumber }}"
+          python make.py \
+            --platform-version ${{ inputs.DSM_VERSION }} \
+            --arch ${{ inputs.SPK_ARCH }} \
+            --p4d ${{ inputs.P4D_VERSION }} \
+            ${{ (github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) || inputs.Beta) && '--beta' || '' }} \
+            --build-number ${{ inputs.PackageBuildNumber }} \
+            --output HelixCoreServer.spk
 
       - name: Rename artifact
         run: |
           cp \
-            /toolkit/result_spk/HelixCoreServer-${{ steps.build_package.outputs.package_version }}/HelixCoreServer-${{ inputs.SPK_ARCH }}-${{ steps.build_package.outputs.package_version }}.spk \
+            HelixCoreServer.spk \
             ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}.spk
 
-      - id: upload_package
-        name: Upload Package
+      - name: Upload Package
         uses: actions/upload-artifact@v7
         with:
           name: HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}
           path: ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}.spk
           if-no-files-found: error
+          archive: false

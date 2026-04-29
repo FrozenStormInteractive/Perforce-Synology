@@ -3,64 +3,83 @@ name: Build & Release
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
   release:
     types: [published]
 
 jobs:
-  prepare-toolkit:
-    name: Prepare Toolkit
-    runs-on: ubuntu-latest
+  build-ctl:
+    name: Build HelixCoreServerCtl
     strategy:
       fail-fast: false
       matrix:
-        DSM_VERSION: ["7.1", "7.2", "7.3"]
-        include:
-          - SPK_PLATFORM: braswell
-            SPK_ARCH: x86_64
-    env:
-      TAR_DIR: "toolkit_tarballs/"
-    steps:
+        ARCH: ["x64"]
+    runs-on: ubuntu-latest
+    steps: 
       - uses: actions/checkout@v6
-
-      - name: Check SDK cache
-        id: cache
-        uses: actions/cache@v5
         with:
-          path: ${{ env.TAR_DIR }}
-          key: synotoolkit-${{ matrix.SPK_PLATFORM }}-${{ matrix.DSM_VERSION }}
-          lookup-only: true
+          repository: FrozenStormInteractive/HelixCoreServerUtils
+          ref: main
 
-      - name: Download & extract SDKs
-        if: steps.cache.outputs.cache-hit != 'true'
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Install dependencies
+        run: dotnet restore src/HelixCoreServerCtl/HelixCoreServerCtl.csproj -r linux-${{ matrix.ARCH }}
+
+      - name: Configure App paths
         run: |
-          sudo mkdir -p "${TAR_DIR}"
-          sudo curl -fL --retry 2 --retry-all-errors --retry-delay 10 --output-dir "${TAR_DIR}" -O "https://global.synologydownload.com/download/ToolChain/toolkit/${{ matrix.DSM_VERSION }}/base/base_env-${{ matrix.DSM_VERSION }}.txz"
-          sudo curl -fL --retry 2 --retry-all-errors --retry-delay 10 --output-dir "${TAR_DIR}" -O "https://global.synologydownload.com/download/ToolChain/toolkit/${{ matrix.DSM_VERSION }}/${{ matrix.SPK_PLATFORM }}/ds.${{ matrix.SPK_PLATFORM }}-${{ matrix.DSM_VERSION }}.dev.txz"
-          sudo curl -fL --retry 2 --retry-all-errors --retry-delay 10 --output-dir "${TAR_DIR}" -O "https://global.synologydownload.com/download/ToolChain/toolkit/${{ matrix.DSM_VERSION }}/${{ matrix.SPK_PLATFORM }}/ds.${{ matrix.SPK_PLATFORM }}-${{ matrix.DSM_VERSION }}.env.txz"
+          cat <<EOF > src/HelixCoreServerCtl/AppPaths.override.json
+          {
+              "ConfigFile": "/var/packages/HelixCoreServer/etc/p4dctl-ng.conf"
+          }
+          EOF
 
-  build:
+      - name: Build Solution
+        run: |
+          dotnet build src/HelixCoreServerCtl/HelixCoreServerCtl.csproj \
+            --no-restore \
+            -r linux-${{ matrix.ARCH }} \
+            --self-contained
+
+      - name: Publish
+        run: |
+          dotnet publish src/HelixCoreServerCtl/HelixCoreServerCtl.csproj \
+            -o ${{ runner.temp }}/HelixCoreServerCtl \
+            -r linux-${{ matrix.ARCH }} \
+            --self-contained \
+            -p:PublishReadyToRun=true \
+            -c Release
+
+      - id: upload_package
+        name: Upload Package
+        uses: actions/upload-artifact@v7
+        with:
+          name: HelixCoreServerCtl-${{ matrix.ARCH }}
+          path: ${{ runner.temp }}/HelixCoreServerCtl
+          if-no-files-found: error
+
+  build-package:
     name: Build Package
-    needs: prepare-toolkit
+    needs: build-ctl
     strategy:
       fail-fast: false
       matrix:
         P4D_VERSION: ["23.1", "23.2", "24.1", "24.2", "25.1", "25.2"]
         DSM_VERSION: ["7.1", "7.2", "7.3"]
         include:
-          - SPK_PLATFORM: braswell
-            SPK_ARCH: x86_64
+          - SPK_ARCH: x86_64
+            CTL_ARCH: x64
     uses: ./.github/workflows/build-package.yml
     with:
       P4D_VERSION: ${{ matrix.P4D_VERSION }}
       DSM_VERSION: ${{ matrix.DSM_VERSION }}
-      SPK_PLATFORM: ${{ matrix.SPK_PLATFORM }}
       SPK_ARCH: ${{ matrix.SPK_ARCH }}
+      CTL_ARCH: ${{ matrix.CTL_ARCH }}
 
   release:
     name: Upload Packages in Github Release
-    needs: build
+    needs: build-package
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
