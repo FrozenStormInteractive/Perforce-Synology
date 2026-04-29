@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ARCH: ["x64"]
+        ARCH: ["x64", "armv6", "arm64"]
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v6
@@ -67,15 +67,27 @@ jobs:
       matrix:
         P4D_VERSION: ["23.1", "23.2", "24.1", "24.2", "25.1", "25.2"]
         DSM_VERSION: ["7.1", "7.2", "7.3"]
-        include:
-          - SPK_ARCH: x86_64
+        SPK:
+          - ARCH: x86_64
             CTL_ARCH: x64
+            BETA: false
+          - ARCH: armv8
+            CTL_ARCH: armv6
+            BETA: true
+        exclude:
+          - P4D_VERSION: "23.1"
+            SPK:
+              ARCH: armv8
+          - P4D_VERSION: "23.2"
+            SPK:
+              ARCH: armv8
     uses: ./.github/workflows/build-package.yml
     with:
       P4D_VERSION: ${{ matrix.P4D_VERSION }}
       DSM_VERSION: ${{ matrix.DSM_VERSION }}
-      SPK_ARCH: ${{ matrix.SPK_ARCH }}
-      CTL_ARCH: ${{ matrix.CTL_ARCH }}
+      SPK_ARCH: ${{ matrix.SPK.ARCH }}
+      CTL_ARCH: ${{ matrix.SPK.CTL_ARCH }}
+      Beta: ${{ matrix.SPK.BETA }}
 
   release:
     name: Upload Packages in Github Release
