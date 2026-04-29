@@ -18,6 +18,10 @@ HelixCoreServer-<Perforce server version>-<Package version number>-<Processor ar
 
 For example, the package with number 0025 containing P4D 23.1 for Synology NAS with x86_64 processor and DSM 7.1 has the name `HelixCoreServer-23.1-0025-x86_64-7.1.spk`.
 
+> [!WARNING]
+> ARM packages are supported on a limited basis (primarily due to the lack of ARM machines available for testing the packages).
+> **If you encounter any issues, there is no guarantee of support.**
+
 ## Installing the package
 
 - Go to the DSM Package Center
