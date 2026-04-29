@@ -17,7 +17,7 @@ debug()
     echo -e "$1" >&2 >> $DEBUGLOGFILE || true
 }
 
-start_HelixCoreServerCtl() {
+start_P4ServerCtl() {
     if [ "$EUID" -eq 0 ]; then
         sudo -u Perforce $P4DCtlExecute start -q -a
     else
@@ -25,7 +25,7 @@ start_HelixCoreServerCtl() {
     fi
 }
 
-stop_HelixCoreServerCtl() {
+stop_P4ServerCtl() {
     if [ "$EUID" -eq 0 ]; then
         sudo -u Perforce $P4DCtlExecute stop -q -a
     else
@@ -33,7 +33,7 @@ stop_HelixCoreServerCtl() {
     fi
 }
 
-status_HelixCoreServerCtl() {
+status_P4ServerCtl() {
     if [ "$EUID" -eq 0 ]; then
         sudo -u Perforce $P4DCtlExecute -q status -q -a
     else

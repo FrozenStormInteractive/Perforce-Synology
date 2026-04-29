@@ -4,7 +4,7 @@
 
 case $1 in
     start)
-        start_HelixCoreServerCtl
+        start_P4Ctl
         case "$?" in
             0) 
                 exit 0
@@ -15,7 +15,7 @@ case $1 in
         esac
         ;;
     stop)
-        stop_HelixCoreServerCtl
+        stop_P4Ctl
         case "$?" in
             0)
                 exit 0
@@ -26,7 +26,7 @@ case $1 in
         esac
         ;;
     status)
-        status_HelixCoreServerCtl
+        status_P4Ctl
         echo "$?"
         exit "$?"
         ;;

@@ -103,4 +103,4 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           files: |
-            packages/HelixCoreServer-*/HelixCoreServer-*.spk
+            packages/P4Server-*/P4Server-*.spk

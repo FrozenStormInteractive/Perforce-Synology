@@ -13,10 +13,10 @@ Download the .spk package corresponding to your NAS in [the Releases page](https
 
 Packages have names containing the information you need to choose which one to install:
 ```
-HelixCoreServer-<Perforce server version>-<Package version number>-<Processor architecture>-<DSM version>.spk 
+P4Server-<Perforce server version>-<Package version number>-<Processor architecture>-<DSM version>.spk 
 ```
 
-For example, the package with number 0025 containing P4D 23.1 for Synology NAS with x86_64 processor and DSM 7.1 has the name `HelixCoreServer-23.1-0025-x86_64-7.1.spk`.
+For example, the package with number 0025 containing P4D 23.1 for Synology NAS with x86_64 processor and DSM 7.1 has the name `P4Server-23.1-0025-x86_64-7.1.spk`.
 
 > [!WARNING]
 > ARM packages are supported on a limited basis (primarily due to the lack of ARM machines available for testing the packages).

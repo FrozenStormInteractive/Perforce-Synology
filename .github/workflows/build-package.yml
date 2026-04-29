@@ -48,18 +48,18 @@ jobs:
             --p4d ${{ inputs.P4D_VERSION }} \
             ${{ (github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) || inputs.Beta) && '--beta' || '' }} \
             --build-number ${{ inputs.PackageBuildNumber }} \
-            --output HelixCoreServer.spk
+            --output P4Server.spk
 
       - name: Rename artifact
         run: |
           cp \
-            HelixCoreServer.spk \
-            ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}.spk
+            P4Server.spk \
+            ${{ runner.temp }}/P4Server-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}.spk
 
       - name: Upload Package
         uses: actions/upload-artifact@v7
         with:
-          name: HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}
-          path: ${{ runner.temp }}/HelixCoreServer-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}.spk
+          name: P4Server-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}
+          path: ${{ runner.temp }}/P4Server-${{ steps.build_package.outputs.package_version }}-${{ inputs.SPK_ARCH }}-${{ inputs.DSM_VERSION }}.spk
           if-no-files-found: error
           archive: false

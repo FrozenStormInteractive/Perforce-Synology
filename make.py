@@ -135,7 +135,7 @@ def make_spk(dsm_version: str, p4d_version: str, arch: str, build_number: int=No
     print("Creating SPK tarball")
 
     if out is None:
-        out = f"HelixCoreServer-{version_string}-{arch}-{dsm_version}.spk"
+        out = f"P4Server-{version_string}-{arch}-{dsm_version}.spk"
     else:
         os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
 
