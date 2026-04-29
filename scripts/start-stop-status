@@ -4,7 +4,7 @@
 
 case $1 in
     start)
-        start_P4Ctl
+        start_P4ServerCtl
         case "$?" in
             0) 
                 exit 0
@@ -15,7 +15,7 @@ case $1 in
         esac
         ;;
     stop)
-        stop_P4Ctl
+        stop_P4ServerCtl
         case "$?" in
             0)
                 exit 0
@@ -26,7 +26,7 @@ case $1 in
         esac
         ;;
     status)
-        status_P4Ctl
+        status_P4ServerCtl
         echo "$?"
         exit "$?"
         ;;
