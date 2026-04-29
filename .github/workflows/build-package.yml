@@ -23,10 +23,10 @@ jobs:
     name: Build Package P4D=${{ inputs.P4D_VERSION }} Platform=${{ inputs.SPK_PLATFORM }} DSM=${{ inputs.DSM_VERSION }} Arch=${{ inputs.SPK_ARCH }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Restore SDK cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: toolkit_tarballs/
           key: synotoolkit-${{ inputs.SPK_PLATFORM }}-${{ inputs.DSM_VERSION }}
