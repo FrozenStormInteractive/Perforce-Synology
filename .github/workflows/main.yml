@@ -49,7 +49,7 @@ jobs:
             -r linux-${{ matrix.ARCH }} \
             --self-contained \
             -p:PublishReadyToRun=true \
-            -c Debug
+            -c Release
 
       - id: upload_package
         name: Upload Package
