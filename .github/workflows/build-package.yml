@@ -17,6 +17,10 @@ on:
         required: false
         type: number
         default: ${{ fromJSON(github.run_number) }}
+      Beta:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -54,7 +58,7 @@ jobs:
           SPK_PLATFORM: ${{ inputs.SPK_PLATFORM }}
           SPK_ARCH: ${{ inputs.SPK_ARCH }}
           P4D_VERSION: ${{ inputs.P4D_VERSION }}
-          SPK_BETA: ${{ github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) }}
+          SPK_BETA: ${{ github.event_name != 'release' || (github.event_name == 'release' && github.event.release.prerelease) || inputs.Beta }}
           SPK_PACKAGE_BUILD_NUMBER: "${{ inputs.PackageBuildNumber }}"
 
       - name: Rename artifact
