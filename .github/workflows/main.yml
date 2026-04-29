@@ -33,7 +33,7 @@ jobs:
           {
               "ConfigFile": "/var/packages/HelixCoreServer/etc/p4dctl-ng.conf"
           }
-          EOF         
+          EOF
 
       - name: Build Solution
         run: |
@@ -49,7 +49,7 @@ jobs:
             -r linux-${{ matrix.ARCH }} \
             --self-contained \
             -p:PublishReadyToRun=true \
-            -c Release
+            -c Debug
 
       - id: upload_package
         name: Upload Package
