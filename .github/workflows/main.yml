@@ -36,10 +36,11 @@ jobs:
           EOF         
 
       - name: Build Solution
-        run: dotnet build src/HelixCoreServerCtl/HelixCoreServerCtl.csproj \
-          --no-restore \
-          -r linux-${{ matrix.ARCH }} \
-          --self-contained
+        run: |
+          dotnet build src/HelixCoreServerCtl/HelixCoreServerCtl.csproj \
+            --no-restore \
+            -r linux-${{ matrix.ARCH }} \
+            --self-contained
 
       - name: Publish
         run: |
