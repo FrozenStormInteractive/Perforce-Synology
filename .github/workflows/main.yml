@@ -44,11 +44,11 @@ jobs:
       - name: Publish
         run: |
           dotnet publish src/HelixCoreServerCtl/HelixCoreServerCtl.csproj \
-          -o ${{ runner.temp }}/HelixCoreServerCtl \
-          -r linux-${{ matrix.ARCH }} \
-          --self-contained \
-          -p:PublishReadyToRun=true \
-          -c Release
+            -o ${{ runner.temp }}/HelixCoreServerCtl \
+            -r linux-${{ matrix.ARCH }} \
+            --self-contained \
+            -p:PublishReadyToRun=true \
+            -c Release
 
       - id: upload_package
         name: Upload Package
