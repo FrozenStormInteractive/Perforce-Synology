@@ -91,14 +91,27 @@ def make_inner_package(p4d_version: str, arch: str):
 
     print("Creating inner package tarball")
 
+    _executables = [
+        "usr/local/bin/p4",
+        "usr/local/bin/p4broker",
+        "usr/local/bin/p4d",
+        "usr/local/bin/p4p",
+        "usr/local/bin/p4dctl-ng",
+    ]
+
+    def set_executable_permissions(tarinfo):
+        if tarinfo.name in _executables:
+            tarinfo.mode = 0o755
+        return tarinfo
+    
     with tarfile.open("out/package.tgz", "w:xz", preset=9) as tar:
         tar.add("ui")
-        tar.add("out/p4", arcname="/usr/local/bin/out/p4")
-        tar.add("out/p4broker", arcname="/usr/local/bin/p4broker")
-        tar.add("out/p4d", arcname="/usr/local/bin/p4d")
-        tar.add("out/p4p", arcname="/usr/local/bin/p4p")
+        tar.add("out/p4", arcname="/usr/local/bin/p4", filter=set_executable_permissions)
+        tar.add("out/p4broker", arcname="/usr/local/bin/p4broker", filter=set_executable_permissions)
+        tar.add("out/p4d", arcname="/usr/local/bin/p4d", filter=set_executable_permissions)
+        tar.add("out/p4p", arcname="/usr/local/bin/p4p", filter=set_executable_permissions)
 
-        tar.add("out/HelixCoreServerCtl/", arcname="/usr/local/bin/")
+        tar.add("out/HelixCoreServerCtl/", arcname="/usr/local/bin/", filter=set_executable_permissions)
 
     uncompressed_size = 0
     with tarfile.open("out/package.tgz", "r:xz") as tar:
